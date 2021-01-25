@@ -20,6 +20,9 @@ def _get_example():
     obj["count"] = 17
     obj["temp"] = 19.2
     obj["info"] = "fredag"
+    obj["list_d3"] = [12.3, 5.0, 666.1]
+    obj["list_i3"] = [42, 99, 117]
+    obj["list_s3"] = ["oktober", "november", "december"]
     
     jsons = json.dumps(obj, indent=2)
     print(jsons)
