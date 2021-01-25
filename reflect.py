@@ -35,11 +35,11 @@ def cogen_decode(obj, structname):
 
     for key, value in obj.items():
 
-        if type(value) == int:
+        if value == "int":
             lines.append('  pack.%s = find_int("%s");' % (key, key) )
-        elif type(value) == float:
+        elif value == "double":
             lines.append('  pack.%s = find_double("%s");' % (key, key) )
-        elif type(value) == str:
+        elif value == "string":
             lines.append('  pack.%s = find_string("%s");' % (key, key) )
         elif type(value) == list:
             # TODO: impl single-typed list handling

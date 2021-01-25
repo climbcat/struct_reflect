@@ -11,7 +11,6 @@ struct ExamplePacket {
   double t7;
 };
 
-
 string encode_examplepacket(ExamplePacket pack){
   return "{"
     + "count:" + to_string(pack.count)
@@ -27,15 +26,15 @@ string encode_examplepacket(ExamplePacket pack){
 };
 ExamplePacket decode_examplepacket(string rjsons){
   ExamplePacket pack;
-  pack.count = find_string("count");
-  pack.temp = find_string("temp");
+  pack.count = find_int("count");
+  pack.temp = find_double("temp");
   pack.info = find_string("info");
-  pack.t1 = find_string("t1");
-  pack.t2 = find_string("t2");
-  pack.t3 = find_string("t3");
-  pack.t4 = find_string("t4");
-  pack.t5 = find_string("t5");
-  pack.t6 = find_string("t6");
-  pack.t7 = find_string("t7");
+  pack.t1 = find_double("t1");
+  pack.t2 = find_double("t2");
+  pack.t3 = find_double("t3");
+  pack.t4 = find_double("t4");
+  pack.t5 = find_double("t5");
+  pack.t6 = find_double("t6");
+  pack.t7 = find_double("t7");
   return pack;
 }
