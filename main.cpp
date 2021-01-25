@@ -14,7 +14,9 @@ int main (int argc, char **argv) {
 
   std::cout << example << "\n";
 
-  find_int("count", example);
+  std::cout << find_int("count", example) << "\n";
+  std::cout << find_double("temp", example) << "\n";
+  std::cout << find_string("info", example) << "\n";
 
   return 0;
 }

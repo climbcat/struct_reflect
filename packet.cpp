@@ -1,6 +1,6 @@
-#include <string>
 using std::string;
-using std::to_string;
+#include "keyfinder.cpp"
+#include <string>
 
 struct ExamplePacket {
   int count;
@@ -14,16 +14,6 @@ struct ExamplePacket {
   double t6;
   double t7;
 };
-
-int find_int(string key, string rjsons) {
-  return 0;
-}
-double find_double(string key, string rjsons) {
-  return 0.0;
-}
-string find_string(string key, string rjsons) {
-  return "";
-}
 
 string encode_examplepacket(ExamplePacket pack){
   string res = "{";
