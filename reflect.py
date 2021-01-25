@@ -24,7 +24,9 @@ def _get_example():
     jsons = json.dumps(obj, indent=2)
     print(jsons)
 
-    return obj
+    text = json.dumps((obj))
+    text = text.replace('"', '\\"')
+    return text
 
 
 def cogen_decode(obj, structname):
@@ -36,11 +38,11 @@ def cogen_decode(obj, structname):
     for key, value in obj.items():
 
         if value == "int":
-            lines.append('  pack.%s = find_int("%s");' % (key, key) )
+            lines.append('  pack.%s = find_int("%s", rjsons);' % (key, key) )
         elif value == "double":
-            lines.append('  pack.%s = find_double("%s");' % (key, key) )
+            lines.append('  pack.%s = find_double("%s", rjsons);' % (key, key) )
         elif value == "string":
-            lines.append('  pack.%s = find_string("%s");' % (key, key) )
+            lines.append('  pack.%s = find_string("%s", rjsons);' % (key, key) )
         elif type(value) == list:
             # TODO: impl single-typed list handling
             pass
@@ -54,20 +56,20 @@ def cogen_encode(obj, structname):
     
     lines = []
     lines.append("string encode_%s(%s pack){" % (structname.lower(), structname))
-    lines.append("  return \"{\"")
+    lines.append("  string res = \"{\";")
     
     for key, value in obj.items():
         if value == "int":
-            lines.append('    + "%s:" + to_string(pack.%s)' % (key, key) )
+            lines.append('  res += "%s:" + to_string(pack.%s);' % (key, key) )
         elif value == "double":
-            lines.append('    + "%s:" + to_string(pack.%s)' % (key, key) )
+            lines.append('  res += "%s:" + to_string(pack.%s);' % (key, key) )
         elif value == "string":
-            lines.append('    + "%s:" + pack.%s' % (key, key) )
+            lines.append('  res += "%s:" + pack.%s;' % (key, key) )
         elif type(value) == list:
             # TODO: impl single-typed list handling
             pass
 
-    lines[-1] = lines[-1] + ";"
+    lines.append('  return res;')
     lines.append('};')
 
     return "\n".join(lines)
@@ -130,8 +132,13 @@ def parse_dataspec_cpp(text):
 
 def main(args):
 
+    # print an examle json string 
+    if args.test:
+        print(_get_example())
+        exit()
+
     # load the dataspec file
-    filename = args.dataspecfile[0]
+    filename = args.dataspecfile
     if not re.search("\.cpp$", filename):
         print("please input a cpp file containing only a data specification script")
         exit()
@@ -156,7 +163,8 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('dataspecfile', nargs=1, help='File containing only a data specification cpp struct.')
+    parser.add_argument('dataspecfile', nargs='?', help='File containing only a data specification cpp struct.')
+    parser.add_argument('--test', action="store_true", help='Test.')
     args = parser.parse_args()
 
     main(args)
