@@ -128,7 +128,14 @@ def parse_dataspec_cpp(text):
             exit()
         dataspec[field] = tpe
 
-    return dataspec, struct_name
+    return dataspec, struct_name, struct_decl
+
+def get_header():
+    head = []
+    head.append('#include "keyfinder.cpp"')
+    head.append('#include <string>')
+    head.append('using std::string;')
+    return "\n".join(head)
 
 def main(args):
 
@@ -151,14 +158,14 @@ def main(args):
         exit()
 
     # parse the dataspec
-    obj, structname = parse_dataspec_cpp(text)
+    obj, structname, structdecl = parse_dataspec_cpp(text)
 
     # cogen
     encode_text = cogen_encode(obj, structname)
     decode_text = cogen_decode(obj, structname)
-
-    print(encode_text)
-    print(decode_text)
+    header = get_header()
+    
+    print(header + "\n" + structdecl + ";" + "\n" + encode_text + "\n" + decode_text)
 
 
 if __name__ == '__main__':
