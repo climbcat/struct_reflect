@@ -78,29 +78,32 @@ vector<string> find_string_array(string key, string rjsons) {
   return vect;
 }
 string encode_double_list(vector<double> vect){
-  string res;
+  string res = "[";
   for(int i = 0; i < vect.size(); i++) {
     res += to_string(vect[i]);
     if (i < vect.size()-1)
       res += ", ";
   }
+  res += "]";
   return res;
 }
 string encode_int_list(vector<int> vect){
-  string res;
+  string res = "[";
   for(int i = 0; i < vect.size(); i++) {
     res += to_string(vect[i]);
     if (i < vect.size()-1)
       res += ", ";
   }
+  res += "]";
   return res;
 }
 string encode_string_list(vector<string> vect){
-  string res;
+  string res = "[";
   for(int i = 0; i < vect.size(); i++) {
-    res += vect[i];
+    res += "\"" + vect[i] + "\"";
     if (i < vect.size()-1)
       res += ", ";
   }
+  res += "]";
   return res;
 }

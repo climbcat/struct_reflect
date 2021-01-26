@@ -72,15 +72,15 @@ def cogen_encode(obj, structname):
         elif value == "double":
             key_lines.append('  res += "\\"%s\\":" + to_string(pack.%s)' % (key, key) )
         elif value == "string":
-            key_lines.append('  res += "\\"%s\\":" + pack.%s' % (key, key) )
+            key_lines.append('  res += "\\"%s\\":\\"" + pack.%s + "\\""' % (key, key) )
         elif value == "vector<int>":
-            key_lines.append('  res += "\\"%s\\":" + encode_int_list(%s)' % (key, key) )
+            key_lines.append('  res += "\\"%s\\":" + encode_int_list(pack.%s)' % (key, key) )
         elif value == "vector<double>":
-            key_lines.append('  res += "\\"%s\\":" + encode_double_list(%s)' % (key, key) )
+            key_lines.append('  res += "\\"%s\\":" + encode_double_list(pack.%s)' % (key, key) )
         elif value == "vector<string>":
-            key_lines.append('  res += "\\"%s\\":" + encode_string_list(%s)' % (key, key) )
+            key_lines.append('  res += "\\"%s\\":" + encode_string_list(pack.%s)' % (key, key) )
     key_lines[-1] = key_lines[-1] + ";"
-    lines.append(' + ", ";\n'.join(key_lines))
+    lines.append(' + ",";\n'.join(key_lines))
     
     lines.append('  res += "}";')
     lines.append('  return res;')
