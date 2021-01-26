@@ -8,6 +8,19 @@ using std::smatch;
 using std::regex;
 using std::vector;
 
+#include <iostream>
+#include <string>
+#include <algorithm>
+
+void _trim(string& s, string what)
+{
+  // (via public domain)
+  size_t start = s.find_first_not_of(what); // ltrim
+  s = ((start == string::npos) ? "" : s.substr(start));
+  size_t end = s.find_last_not_of(what); // rtrim
+  s = (end == std::string::npos) ? "" : s.substr(0, end + 1);
+}
+
 int find_int(string key, string rjsons) {
   string spat = "\"" + key + "\":\\s*([0-9]+)\\s*,?}?";
   regex pat {spat};
@@ -58,7 +71,8 @@ vector<string> find_string_array(string key, string rjsons) {
   vector<string> vect;
   string token;
   while (std::getline(iss, token, ',')) {
-    // TODO: remove the quotations
+    _trim(token, " ");
+    _trim(token, "\"");
     vect.push_back(token);
   }
   return vect;
