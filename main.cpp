@@ -10,6 +10,8 @@
 using std::string;
 
 int main (int argc, char **argv) {
+  // decoder testing
+
   string example = "{\"count\": 17, \"temp\": 19.2, \"info\": \"fredag\", \"list_d3\": [12.3, 5.0, 666.1], \"list_i3\": [42, 99, 117], \"list_s3\": [\"oktober\", \"november\", \"december\"]}";
   std::cout << example << "\n";
   std::cout << "\n";
@@ -35,6 +37,22 @@ int main (int argc, char **argv) {
     std::cout << vec3[i] << "\n";
   }
   std::cout << "\n";
+
+
+  ExamplePacket pack;
+  pack = decode_examplepacket(example);
+  std::cout << pack.count << "\n";
+  std::cout << pack.info << "\n";
+  std::cout << pack.temp << "\n";
+
+  std::cout << "\n";
+
+
+  // encoder testing
+
+  std::cout << encode_examplepacket(pack) << "\n";
+
+
 
   return 0;
 }

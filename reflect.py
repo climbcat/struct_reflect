@@ -46,10 +46,14 @@ def cogen_decode(obj, structname):
             lines.append('  pack.%s = find_double("%s", rjsons);' % (key, key) )
         elif value == "string":
             lines.append('  pack.%s = find_string("%s", rjsons);' % (key, key) )
-        elif type(value) == list:
-            # TODO: impl single-typed list handling
-            pass
-        
+
+        elif value == "vector<double>":
+            lines.append('  pack.%s = find_double_array("%s", rjsons);' % (key, key) )
+        elif value == "vector<int>":
+            lines.append('  pack.%s = find_int_array("%s", rjsons);' % (key, key) )
+        elif value == "vector<string>":
+            lines.append('  pack.%s = find_string_array("%s", rjsons);' % (key, key) )
+
     lines.append("  return pack;")
     lines.append("}")
     
@@ -61,17 +65,24 @@ def cogen_encode(obj, structname):
     lines.append("string encode_%s(%s pack){" % (structname.lower(), structname))
     lines.append("  string res = \"{\";")
     
+    key_lines = [] # do this to fix commas
     for key, value in obj.items():
         if value == "int":
-            lines.append('  res += "%s:" + to_string(pack.%s);' % (key, key) )
+            key_lines.append('  res += "\\"%s\\":" + to_string(pack.%s)' % (key, key) )
         elif value == "double":
-            lines.append('  res += "%s:" + to_string(pack.%s);' % (key, key) )
+            key_lines.append('  res += "\\"%s\\":" + to_string(pack.%s)' % (key, key) )
         elif value == "string":
-            lines.append('  res += "%s:" + pack.%s;' % (key, key) )
-        elif type(value) == list:
-            # TODO: impl single-typed list handling
-            pass
-
+            key_lines.append('  res += "\\"%s\\":" + pack.%s' % (key, key) )
+        elif value == "vector<int>":
+            key_lines.append('  res += "\\"%s\\":" + encode_int_list(%s)' % (key, key) )
+        elif value == "vector<double>":
+            key_lines.append('  res += "\\"%s\\":" + encode_double_list(%s)' % (key, key) )
+        elif value == "vector<string>":
+            key_lines.append('  res += "\\"%s\\":" + encode_string_list(%s)' % (key, key) )
+    key_lines[-1] = key_lines[-1] + ";"
+    lines.append(' + ", ";\n'.join(key_lines))
+    
+    lines.append('  res += "}";')
     lines.append('  return res;')
     lines.append('};')
 
@@ -108,26 +119,29 @@ def parse_dataspec_cpp(text):
         if re.match("\/\/", line):
             continue
 
-        m = re.match("((?!\d)\w[0-9\w]+)\s+((?!\d)\w[0-9\w]*)", line); # (?!\d) means non-digit
+        m = re.match("((?!\d)\w[0-9\w]+)\s+((?!\d)\w[0-9\w]*)", line) # (?!\d) means non-digit
         tpe = None
         field = None
         try:
             tpe = m.group(1)
             field = m.group(2)
         except:
-            
-            # TODO: create the list/* branch here
-            
-            print('could or would not parse expression "%s;"' % line)
-            exit()
+            # vector case
+            m2 = re.match("(vector<\w+>)\s+((?!\d)\w[0-9\w]*)", line)
+            if m2:
+                tpe = m2.group(1)
+                field = m2.group(2)
+            else:
+                print('could not parse expression "%s;"' % line)
+                exit()
 
         # check for uniqueness
         if field in dataspec.keys():
             print('Error: field "%s" is a duplicate' % field)
             exit()
         
-        if tpe not in ("int", "double", "string",):
-            print('Error: field "%s" has type "%s". Supported types are int, double and string, and pointers to an int, double or string' % (field, tpe))
+        if tpe not in ("int", "double", "string","vector<int>", "vector<double>", "vector<string>",):
+            print('Error: field "%s" has type "%s". Supported types are int, double and string, and vector of int, double or string' % (field, tpe))
             exit()
         dataspec[field] = tpe
 
@@ -137,6 +151,7 @@ def get_header():
     head = []
     head.append('#include "keyfinder.cpp"')
     head.append('#include <string>')
+    head.append('#include <vector>')
     head.append('using std::string;')
     return "\n".join(head)
 
